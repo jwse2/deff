@@ -1,0 +1,54 @@
+
+# Top level directoy
+TOP = .\tools
+
+# Programs and their respective parameters
+CC = cl
+AS = ml64
+LD = link
+AR = lib
+RC = rc
+CFLAGS  = -nologo -TP -MTd -W3 -WX -O2 -Oy -Zp8 -EHsc -Zi -I"$(TOP)\..\include"
+WFLAGS  = -D_CRT_SECURE_NO_DEPRECATE -D_UNICODE -D_DEBUG
+ASFLAGS = -nologo -Cx -Zi
+LDFLAGS = -nologo -incremental:no -opt:ref -debug:full -libpath:$(TOP)\..\libs
+ARFLAGS = -nologo -libpath:$(TOP)\..\libs
+RCFLAGS = /nologo /dWIN32 /r
+
+# The objects to compile
+OBJS = dump.obj dyndump.obj linker.obj intersect.obj
+LIBS = kernel32.lib user32.lib zlib.lib
+
+all: dirs dump dyndump linker intersect
+
+$(OBJS):
+    $(CC) -c $(WFLAGS) $(CFLAGS) -Fd"$(TOP)\$(@R).pdb" -Fo"$(TOP)\$@" $(TOP)\$(@R).cpp 
+
+dirs:
+    if not exist $(TOP)\..\bin mkdir $(TOP)\..\bin
+    if not exist $(TOP)\..\libs mkdir $(TOP)\..\libs
+    if not exist $(TOP)\..\include mkdir $(TOP)\..\include
+
+dump: dirs $(OBJS)
+    $(LD) $(LDFLAGS) -out:$(TOP)\..\bin\$@.exe $(TOP)\$@.obj $(LIBS)
+
+dyndump: dirs $(OBJS)
+    $(LD) $(LDFLAGS) -out:$(TOP)\..\bin\$@.exe $(TOP)\$@.obj $(LIBS)
+
+linker: dirs $(OBJS)
+    $(LD) $(LDFLAGS) -out:$(TOP)\..\bin\$@.exe $(TOP)\$@.obj $(LIBS)
+
+intersect: dirs $(OBJS)
+    $(LD) $(LDFLAGS) -out:$(TOP)\..\bin\$@.exe $(TOP)\$@.obj $(LIBS)
+
+clean:
+    del $(TOP)\..\bin\dump.exe
+    del $(TOP)\..\bin\dump.pdb
+    del $(TOP)\..\bin\dyndump.exe
+    del $(TOP)\..\bin\dyndump.pdb
+    del $(TOP)\..\bin\linker.exe
+    del $(TOP)\..\bin\linker.pdb
+    del $(TOP)\..\bin\intersect.exe
+    del $(TOP)\..\bin\intersect.pdb
+    del /S $(TOP)\*.obj
+    del /S $(TOP)\*.pdb

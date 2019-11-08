@@ -1,0 +1,55 @@
+
+# Top level directoy
+TOP = .
+
+# Versions to compile
+OLD = 1.1.4
+NEW = 1.2.11
+
+# Version to install
+VER = $(NEW)
+
+# Programs and their respective parameters
+CC = cl
+AR = lib
+CFLAGS  = -nologo -TC -MTd -W3 -WX -O2 -Oy- -Zi -wd4267 -wd4244
+WFLAGS  = -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_DEBUG
+ARFLAGS = -nologo
+
+# Version 1.2.11 - up-to-date
+OBJSA = $(NEW)\adler32.obj $(NEW)\compress.obj $(NEW)\crc32.obj $(NEW)\deflate.obj $(NEW)\gzclose.obj \
+        $(NEW)\gzlib.obj $(NEW)\gzread.obj $(NEW)\gzwrite.obj $(NEW)\infback.obj $(NEW)\inflate.obj \
+        $(NEW)\inftrees.obj $(NEW)\inffast.obj $(NEW)\trees.obj $(NEW)\uncompr.obj $(NEW)\zutil.obj
+
+# Version 1.1.4 - Call of Duty
+OBJSB = $(OLD)\adler32.obj $(OLD)\compress.obj $(OLD)\crc32.obj $(OLD)\deflate.obj $(OLD)\gzio.obj \
+        $(OLD)\infblock.obj $(OLD)\infcodes.obj $(OLD)\inflate.obj $(OLD)\inftrees.obj $(OLD)\infutil.obj \
+        $(OLD)\inffast.obj $(OLD)\trees.obj $(OLD)\uncompr.obj $(OLD)\zutil.obj
+
+all: $(OBJSA) $(OBJSB)
+    $(AR) $(ARFLAGS) -out:$(TOP)\$(NEW)\zlib.lib $(OBJSA)
+    $(AR) $(ARFLAGS) -out:$(TOP)\$(OLD)\zlib.lib $(OBJSB)
+
+$(OBJSA):
+    $(CC) -c $(WFLAGS) $(CFLAGS) -Fd"$(TOP)\$(NEW)\zlib.pdb" -Fo$(TOP)\$@ $(TOP)\$(@R).c
+
+$(OBJSB):
+    $(CC) -c $(WFLAGS) $(CFLAGS) -Fd"$(TOP)\$(OLD)\zlib.pdb" -Fo$(TOP)\$@ $(TOP)\$(@R).c
+
+install:
+    if not exist ..\libs mkdir ..\libs
+    if not exist ..\include mkdir ..\include
+    copy /Y $(TOP)\$(VER)\zlib.h ..\include
+    copy /Y $(TOP)\$(VER)\zconf.h ..\include
+    copy /Y $(TOP)\$(VER)\zlib.lib ..\libs
+    copy /Y $(TOP)\$(VER)\zlib.pdb ..\libs
+
+clean:
+    del /S *.lib
+    del /S *.exp
+    del /S *.obj
+    del /S *.pdb
+    del ..\libs\zlib.lib
+    del ..\libs\zlib.pdb
+    del ..\include\zlib.h
+    del ..\include\zconf.h

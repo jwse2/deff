@@ -1,0 +1,59 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build ZLIB",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}\\zlib"
+            },
+            "command": ".\\..\\_build.bat",
+            "args": [
+                "Makefile.msc",
+                "clean all install"
+            ]
+        },
+        {
+            "label": "Build DEFF",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "command": "_build.bat",
+            "args": [
+                "Makefile.msc",
+                "deff"
+            ]
+        },
+        {
+            "label": "Clean DEFF",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            "command": "_build.bat",
+            "args": [
+                "Makefile.msc",
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build Tools",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceRoot}\\tools"
+            },
+            "command": ".\\..\\_build.bat",
+            "args": [
+                "Makefile.msc",
+                "clean all"
+            ]
+        }
+    ]
+}

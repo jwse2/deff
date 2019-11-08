@@ -1,0 +1,61 @@
+
+# Top level directoy
+TOP = .
+
+# Programs and their respective parameters
+CC = cl
+AS = ml64
+LD = link
+AR = lib
+RC = rc
+CFLAGS  = -nologo -TP -MTd -W3 -WX -O2 -Oy -Zp8 -EHsc -Zi -Fd"$(TOP)\bin\deff.pdb" -I"$(TOP)\include"
+WFLAGS  = -D_CRT_SECURE_NO_DEPRECATE -D_UNICODE -D_DEBUG
+ASFLAGS = -nologo -Cx -Zi
+LDFLAGS = -nologo -incremental:no -opt:ref -debug:full -libpath:"$(TOP)\libs"
+ARFLAGS = -nologo -libpath:"$(TOP)\libs"
+RCFLAGS = /nologo /dWIN32 /r
+
+# The objects to compile
+OBJS = src\exception.obj src\stream.obj src\fstream.obj src\zstream.obj \
+    src\asset.obj src\fastfile.obj src\assets\physpreset.obj src\assets\localize.obj \
+    src\assets\rawfile.obj src\assets\stringtable.obj src\assets\techset.obj \
+    src\assets\material.obj src\assets\image.obj
+FFS = \
+    "$(TOP)\data\dec_image_b.ff" \
+    "$(TOP)\data\dec_material.ff"
+
+FFS_COMPLETE = \
+    "$(TOP)\data\non_existing.ff" \
+    "$(TOP)\data\dec_localize.ff" \
+    "$(TOP)\data\dec_physpreset.ff" \
+    "$(TOP)\data\dec_rawfile.ff" \
+    "$(TOP)\data\dec_stringtable.ff" \
+    "$(TOP)\data\intro_pac.ff" \
+    "$(TOP)\data\a_test.ff" \
+    "$(TOP)\data\dec_weapon.ff" \
+    "$(TOP)\data\dec_image.ff" \
+    "$(TOP)\data\dec_image_c.ff" \
+    "$(TOP)\data\dec_techset.ff"
+
+all: dirs deff
+
+$(OBJS):
+    "$(CC)" -c $(WFLAGS) $(CFLAGS) -Fo"$(TOP)\$@" "$(TOP)\$(@R).cpp"
+
+dirs:
+    if not exist "$(TOP)\bin" mkdir "$(TOP)\bin"
+    if not exist "$(TOP)\libs" mkdir "$(TOP)\libs"
+    if not exist "$(TOP)\include" mkdir "$(TOP)\include"
+
+deff: dirs $(OBJS)
+    "$(CC)" -c $(WFLAGS) $(CFLAGS) -Fo"$(TOP)\src\$@.obj" "$(TOP)\src\$@.cpp"
+    "$(LD)" $(LDFLAGS) -out:"$(TOP)\bin\$@.exe" zlib.lib "$(TOP)\src\$@.obj" $(OBJS)
+
+test:
+    "$(TOP)\bin\deff.exe" $(FFS) 1> console.log 2> error.log
+
+clean:
+    del "$(TOP)\bin\deff.exe"
+    del "$(TOP)\bin\deff.pdb"
+    del /S "$(TOP)\src\*.obj"
+    del /S "$(TOP)\src\*.res"
